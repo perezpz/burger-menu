@@ -1,0 +1,148 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.home-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+.homeBanner {
+  width: 100%;
+}
+
+.bg {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 111px);
+  min-height: 7.5rem;
+  background: 100% no-repeat;
+  background-size: cover;
+  background-image: url("./assets/bg_1.jpg");
+}
+.content {
+  position: relative;
+  top: 20%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.side-wrapper {
+  display: flex;
+  justify-content: center;
+  .button {
+    min-width: 60px;
+    text-transform: uppercase;
+  }
+}
+
+.button {
+  color: inherit;
+  box-shadow: none;
+  font-size: 14px;
+  line-height: 20px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 0 solid transparent;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: 600;
+  outline: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  background-color: #fff;
+}
+.mg {
+  margin-right: 8px;
+}
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  margin: 20px 0;
+  min-width: 200px;
+  font-size: 16px;
+  text-transform: uppercase;
+  .prefix {
+    margin: 0 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+.bm-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  color: inherit;
+  padding-left: 0px;
+  padding-right: 12px;
+  background-color: transparent;
+  box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+}
+
+.button.active {
+  background-color: rgb(107, 112, 117);
+  color: #fff;
+}
+
+.animate-wrapper {
+  display: flex;
+  flex-direction: column;
+  .button {
+    height: 48px;
+    padding: 6px 12px;
+    min-width: 120px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+}
+
+.mHeader {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 0;
+  z-index: 3;
+  padding: 12px 16px;
+  .burger-wrapper {
+    float: right;
+  }
+  .left {
+    float: left;
+  }
+  .burger {
+    font-size: 28px;
+    cursor: pointer;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .bg {
+    background-image: url("./assets/bg.png");
+    height: calc(100vh);
+  }
+  .content {
+    position: relative;
+    top: 20%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+  .mHeader {
+    padding: 8px;
+  }
+}

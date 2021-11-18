@@ -1,0 +1,14 @@
+{
+    "extends": [
+        // "plugin:react/recommended",
+        // "plugin:@typescript-eslint/recommended",
+        // "plugin:prettier/recommended"
+    ],
+    "rules": {
+        "no-ternary": "off",
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": [
+            "off"
+        ]
+    }
+}
