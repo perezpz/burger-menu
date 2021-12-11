@@ -1,0 +1,21 @@
+name: "publish"
+on: push
+jobs:
+  publish-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - run: npm i -g lerna && npm run bootstrap
+      - name: Release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run:
+          npm config set registry=https://registry.npmjs.org/
+          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          npm whoami
+          echo "$RELEASE_VERSION"
+          lerna version --exact --force-publish --yes --no-push
+          lerna publish from-package --yes
