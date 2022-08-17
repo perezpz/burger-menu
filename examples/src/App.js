@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import * as JSURL from 'jsurl';
 import { useSearchParams } from 'react-router-dom';
-import { slide, fallDown, SubMenu, Item } from 'burger-menu';
+import { Menu, SubMenu, Item } from 'burger-menu';
 import 'burger-menu/lib/index.css';
 import './index.scss';
 
@@ -33,10 +33,6 @@ export default function App() {
   const [animate, setAnimaate] = useState('slide');
   const [selectedKey, setSelectedKey] = useState('');
   const [nav, setNav] = useQueryParam('nav');
-
-  const components = { slide, fallDown };
-  const Burger = components[animate];
-
   const [isOpen, setIsOpen] = useState(false);
 
   const updateNav = (value) => {
@@ -66,10 +62,11 @@ export default function App() {
             <MenuIcon className="burger" />
           </div>
         </div>
-        <Burger
+        <Menu
           className="burger-menu"
           width={w}
-          left={side === 'left'}
+          side={side}
+          animate={animate}
           isOpen={isOpen}
           selectedKey={selectedKey}
           onClose={() => setIsOpen(false)}
@@ -89,8 +86,17 @@ export default function App() {
             ></Item>
             <Item itemKey={'union'} text={'Union Inquiries'}></Item>
             <Item itemKey={'entry'} text={'Entry information'}></Item>
+            <SubMenu title="Option">
+              <Item
+                itemKey={'option1'}
+                text={'option1'}
+                icon={<LoveIcon />}
+              ></Item>
+              <Item itemKey={'option2'} text={'option2'}></Item>
+              <Item itemKey={'option3'} text={'option3'}></Item>
+            </SubMenu>
           </SubMenu>
-        </Burger>
+        </Menu>
       </div>
     );
   };
