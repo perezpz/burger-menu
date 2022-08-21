@@ -47,8 +47,8 @@ Here is a quick example to get you started, it's all you need:
 
 ```jsx live=true dir="column"
 import React, { useState } from "react";
-import ReactDOM from 'react-dom';
-import { slide as Burger, SubMenu, Item } from "burger-menu";
+import { createRoot } from 'react-dom/client';
+import { Menu, SubMenu, Item } from "burger-menu";
 import 'burger-menu/lib/index.css';
 
 const App = () => {
@@ -56,7 +56,7 @@ const App = () => {
   return (
     <>
       <div onClick={() => setIsOpen(!isOpen)}>Icon</div>
-      <Burger className="burger-menu" isOpen={isOpen} selectedKey={'entry'} onClose={() => setIsOpen(false)}>
+      <Menu className="burger-menu" isOpen={isOpen} selectedKey={'entry'} onClose={() => setIsOpen(false)}>
         <Item itemKey={'manage'} text={'User Management'}></Item>
         <Item itemKey={'user'} text={'User Center'}></Item>
         <SubMenu title="Union Management">
@@ -64,17 +64,17 @@ const App = () => {
           <Item itemKey={'union'} text={'Union Inquiries'}></Item>
           <Item itemKey={'entry'} text={'Entry information'}></Item>
         </SubMenu>
-      </Burger>
+      </Menu>
     </>
 });
 
-ReactDOM.render(<App />, document.querySelector('#app'));
+createRoot(document.getElementById('root')).render(<App />);
 ```
 
 ## How to import
 
 ```jsx
-import { slide as Burger, SubMenu } from 'burger-menu';
+import { Menu, SubMenu } from 'burger-menu';
 import 'burger-menu/lib/index.css';
 ```
 
@@ -91,8 +91,9 @@ The usage above imported `slide` which renders a menu that slides in when the bu
 | ---------------- | ----------------------------------------------------------------- | ----------------- | -------- |
 | isOpen           | Control open state                                                | boolean           | false    |
 | width            | Width                                                             | number \| string  | 300      |
-| left             | Sliding position                                                  | boolean           | false    |
-| duration         | Automatic close delay                                             | string            | 300ms    |
+| side             | Sliding position                                                  | string            | right    |
+| animate          | animate type                                                      | string            | slide    |
+| duration         | transition duration                                               | string            | 300ms    |
 | customCrossIcon  | Icon for close button                                             | ReactNode         | false    |
 | customIcon       | Custom icon or logo component, will be displayed on the head left | ReactNode         | false    |
 | onOpen           | The Callback function when animation end                          | function(e) => {} | () => {} |

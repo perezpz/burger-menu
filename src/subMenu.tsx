@@ -11,10 +11,16 @@ type Props = {
 };
 const SubMenu = (props: Props) => {
   const { title, icon, children, ...restProps } = props;
+
+  const iterate = (elem: any) => {
+    if (elem.props.itemKey === restProps.selectedKey) return true;
+    if (elem.props.children?.length) {
+      return elem.props.children.some(iterate);
+    }
+    return false;
+  };
   const [state, setState] = useState({
-    isVisible: Children.toArray(children).some(
-      (child: any) => child.props.itemKey === restProps.selectedKey,
-    ),
+    isVisible: Children.toArray(children).some(iterate),
     rotate: 0,
   });
 
@@ -29,9 +35,7 @@ const SubMenu = (props: Props) => {
     <div className="sub-menu-wrap">
       <div className="sub-item" onClick={handleToggle}>
         <span className="title">{title}</span>
-        <span className="arrow">
-          {icon ? icon : <ArrowDownIcon className="arrow" rotate={rotate} />}
-        </span>
+        <span className="arrow">{icon ? icon : <ArrowDownIcon className="arrow" rotate={rotate} />}</span>
       </div>
 
       <Collapsible isVisible={isVisible}>

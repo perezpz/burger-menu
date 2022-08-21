@@ -27,7 +27,7 @@ export const baseStyles: baseOptions = {
   },
 };
 
-export const animateStyles = {
+export const animateStyles: any = {
   slide: {
     right: {
       start: {

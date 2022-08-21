@@ -1,13 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  isValidElement,
-  cloneElement,
-  Children,
-} from 'react';
+import React, { useState, useEffect, useRef, isValidElement, cloneElement, Children } from 'react';
 import { baseStyles, animateStyles } from './baseStyles';
-import StyleTransition from './styleTransition';
 import noop from './utils/noop';
 import cls from 'classnames';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,7 +8,7 @@ import ClosedIcon from './icons/Close';
 
 type MenuProps = {
   isOpen: boolean;
-  side?: string | undefined;
+  side?: string;
   animate?: string;
   width?: string | number;
   duration?: string;
@@ -29,11 +21,7 @@ type MenuProps = {
   noOverlay?: boolean;
   overlayClassName?: string;
   children?: React.ReactNode;
-  onClick: (data: {
-    itemKey: string;
-    domEvent: MouseEvent;
-    text: string;
-  }) => void;
+  onClick: (data: { itemKey: string; domEvent: MouseEvent; text: string }) => void;
   selectedKey?: string;
   className?: string;
 };
@@ -41,15 +29,7 @@ type MenuProps = {
 const Menu = (props: MenuProps) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuWrap = useRef(null);
-  const {
-    isOpen,
-    width,
-    duration,
-    customCrossIcon,
-    customIcon,
-    side,
-    animate,
-  } = props;
+  const { isOpen, width, duration, customCrossIcon, customIcon, side, animate } = props;
 
   useEffect(() => {
     if (isOpen !== undefined) {
@@ -101,17 +81,7 @@ const Menu = (props: MenuProps) => {
     props.onClose();
   };
 
-  const restProps = {
-    didEnter,
-    didLeave,
-    duration,
-  };
-
-  const closeIcon = customCrossIcon ? (
-    customCrossIcon
-  ) : (
-    <ClosedIcon className="close-icon" />
-  );
+  const closeIcon = customCrossIcon ? customCrossIcon : <ClosedIcon className="close-icon" />;
 
   const childElem = props.children
     ? Children.map(props.children, (child: any) => {
@@ -123,7 +93,7 @@ const Menu = (props: MenuProps) => {
       })
     : null;
 
-  const variants: any = animateStyles[animate][side];
+  const variants: Record<string, any> = animateStyles[animate][side] || {};
 
   return (
     <>
@@ -149,14 +119,18 @@ const Menu = (props: MenuProps) => {
           )}
         </AnimatePresence>
       )}
-      <AnimatePresence>
+      <AnimatePresence
+        onExitComplete={() => {
+          if (!isMenuOpen) didLeave();
+        }}
+      >
         {isMenuOpen && (
           <motion.div
             className={cls('menu-wrap', props.className)}
             ref={menuWrap}
             style={{ ...getStyles('menuWrap'), ...variants.style }}
             transition={{
-              duration: 0.3,
+              duration,
               ease: 'easeInOut',
             }}
             initial="end"
@@ -165,6 +139,9 @@ const Menu = (props: MenuProps) => {
             variants={{
               start: variants.start,
               end: variants.end,
+            }}
+            onAnimationComplete={() => {
+              if (isMenuOpen) didEnter();
             }}
           >
             <div className="head">

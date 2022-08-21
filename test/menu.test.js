@@ -1,68 +1,35 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import {
-  slide as SlideBurger,
-  fallDown as FallDownBurger,
-  SubMenu,
-  Item,
-} from '../src';
+import { Menu, SubMenu, Item } from '../src';
 import Icon from '../examples/src/icons/Menu';
 import noop from '../src/utils/noop';
-import { genBeforeEach, genAfterEach, mount } from './utils';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 const sleep = (ms) => new Promise((resolve, reject) => setTimeout(resolve, ms));
 
-const animates = { slide: SlideBurger, fallDown: FallDownBurger };
-
-function getMenu({
-  menuProps,
-  subMenuProps,
-  itemProps,
-  animate = 'slide',
-  children,
-}) {
+function getMenu({ menuProps, subMenuProps, itemProps, children }) {
   let props = menuProps ? menuProps : {};
   let subProps = subMenuProps ? subMenuProps : {};
-  const Burger = animates[animate];
 
   return (
-    <Burger {...props}>
+    <Menu {...props}>
       {children ? (
         children
       ) : (
         <>
-          <Item
-            itemKey={'manage'}
-            text={'User Management'}
-            {...itemProps}
-          ></Item>
+          <Item itemKey={'manage'} text={'User Management'} {...itemProps}></Item>
           <SubMenu title="Union Management" {...subProps}>
-            <Item
-              itemKey={'union'}
-              text={'Union Inquiries'}
-              {...itemProps}
-            ></Item>
-            <Item
-              itemKey={'entry'}
-              text={'Entry information'}
-              {...itemProps}
-            ></Item>
+            <Item itemKey={'union'} text={'Union Inquiries'} {...itemProps}></Item>
+            <Item itemKey={'entry'} text={'Entry information'} {...itemProps}></Item>
           </SubMenu>
         </>
       )}
-    </Burger>
+    </Menu>
   );
 }
 
 describe('Menu', () => {
-  beforeEach(() => {
-    genBeforeEach();
-  });
-
-  afterEach(() => {
-    genAfterEach();
-  });
-
   beforeAll(() => {
     jest.useFakeTimers();
   });
@@ -77,77 +44,83 @@ describe('Menu', () => {
         isOpen: true,
       },
     });
-    const menu = mount(component);
+    const { container } = render(component);
 
-    // check if has corrent SubMenu
-    expect(menu.find('.sub-item').length > 0).toBeTruthy();
     // test SubMenu title
-    expect(menu.find('.sub-item .title').text()).toBe('Union Management');
+    expect(screen.getByText('Union Management')).toBeTruthy();
     // check if has correct menu items
-    expect(menu.find('.bm-item').length === 1).toBeTruthy();
-    // check if has corrent overlay
-    expect(menu.find('.overlay').length > 0).toBeTruthy();
+    expect(container.querySelectorAll('.bm-item').length === 1).toBeTruthy();
+    // // check if has corrent overlay
+    expect(container.querySelectorAll('.overlay').length > 0).toBeTruthy();
   });
 
   it('test control props', async () => {
-    const component = getMenu({
-      menuProps: {
-        isOpen: true,
-      },
-    });
-    const menu = mount(component);
+    let container = render(
+      getMenu({
+        menuProps: {
+          isOpen: true,
+        },
+      }),
+    ).container;
+    expect(container.querySelectorAll('.overlay').length).toBe(1);
 
-    menu.setProps({ noOverlay: true });
-    expect(menu.exists('.overlay')).toEqual(false);
+    container = render(
+      getMenu({
+        menuProps: {
+          isOpen: true,
+          noOverlay: true,
+        },
+      }),
+    ).container;
+    expect(container.querySelectorAll('.overlay').length).toBe(0);
   });
 
   it('test onClose/onOpen', async () => {
-    const spyOnClose = sinon.spy(noop);
-    const spyOnOpen = sinon.spy(noop);
+    const handleClick = jest.fn()
     const component = getMenu({
       menuProps: {
-        isOpen: false,
-        onClose: spyOnClose,
-        onOpen: spyOnOpen,
+        isOpen: true,
+        onClose: handleClick,
+        onOpen: handleClick,
       },
     });
-    const menu = mount(component);
-
-    menu.setProps({ isOpen: true });
-    act(() => {
-      jest.runAllTimers();
-      menu.update();
-    });
-
-    menu.find('.close').simulate('click');
-    expect(spyOnClose.calledOnce).toBe(true);
+    const { container } = render(component);
+    fireEvent.click(container.querySelector('.close'));
+    expect(handleClick).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('User Management')).toBeNull;
   });
 
   it('test width', () => {
-    const component = getMenu({
-      menuProps: {
-        isOpen: true,
-      },
-    });
-    const menu = mount(component);
-    const dom = menu.find('.menu-wrap').getDOMNode();
-    expect(window.getComputedStyle(dom).width).toEqual('300px');
-    menu.setProps({ width: 400 });
-    expect(window.getComputedStyle(dom).width).toEqual('400px');
-    menu.setProps({ width: '100%' });
-    expect(window.getComputedStyle(dom).width).toEqual('100%');
+    const container1 = render(
+      getMenu({
+        menuProps: {
+          isOpen: true,
+        },
+      }),
+    ).container;
+    expect(window.getComputedStyle(container1.querySelector('.menu-wrap')).width).toEqual('300px');
+
+    const container2 = render(
+      getMenu({
+        menuProps: {
+          isOpen: true,
+          width: '100%',
+        },
+      }),
+    ).container;
+    expect(window.getComputedStyle(container2.querySelector('.menu-wrap')).width).toEqual('100%');
   });
 
-  it('test left props', () => {
-    const component = getMenu({
-      menuProps: {
-        isOpen: true,
-      },
-    });
-    const menu = mount(component);
-    menu.setProps({ left: true });
-    const dom = menu.find('.menu-wrap').getDOMNode();
-    expect(window.getComputedStyle(dom).left).toEqual('0px');
+  it('test side props', () => {
+    const { container } = render(
+      getMenu({
+        menuProps: {
+          isOpen: true,
+          side: 'right',
+        },
+      }),
+    );
+    expect(window.getComputedStyle(container.querySelector('.menu-wrap')).right).toEqual('0px');
   });
 
   it('test icon', () => {
@@ -161,40 +134,42 @@ describe('Menu', () => {
         icon: <Icon className="sub-arrow-icon" />,
       },
     });
-    const menu = mount(component);
-    expect(menu.exists('.custom-icon')).toBe(true);
-    expect(menu.exists('.close-icon')).toBe(true);
-    expect(menu.exists('.sub-arrow-icon')).toBe(true);
+    const { container } = render(component);
+    expect(container.getElementsByClassName('custom-icon').length).toBe(1);
+    expect(container.getElementsByClassName('close-icon').length).toBe(1);
+    expect(container.getElementsByClassName('sub-arrow-icon').length).toBe(1);
   });
 
   it('test className', async () => {
     const component = getMenu({
       menuProps: {
         isOpen: true,
+        bodyClassName: 'custom-body',
+        htmlClassName: 'custom-html',
+        overlayClassName: 'custom-overlay',
       },
     });
-    const menu = mount(component);
-    menu.setProps({
-      bodyClassName: 'custorm-body',
-      htmlClassName: 'custom-html',
-      overlayClassName: 'custom-overlay',
+    const { container } = render(component);
+
+    await waitFor(() => {
+      expect(document.getElementsByClassName('custom-html').length).toBe(1);
+      expect(document.getElementsByClassName('custom-body').length).toBe(1);
+      expect(container.getElementsByClassName('custom-overlay').length).toBe(1);
     });
-    menu.update();
-    expect(menu.exists('.custom-html')).toBeTruthy;
-    expect(menu.exists('.custom-body')).toBeTruthy;
-    expect(menu.exists('.custom-body')).toBeTruthy;
   });
 
-  it('test fallDown', () => {
+  it('test fallDown', async () => {
     const component = getMenu({
       menuProps: {
         isOpen: true,
+        animate: 'fallDown',
       },
-      animate: 'fallDown',
     });
-    const menu = mount(component);
-    const dom = menu.find('.menu-wrap').getDOMNode();
-    expect(window.getComputedStyle(dom).animationName).toEqual('slideInTop');
+    const { container } = render(component);
+    await waitFor(() => {
+      const dom = container.querySelector('.menu-wrap');
+      expect(window.getComputedStyle(dom).top).toEqual('-100%');
+    });
   });
 
   it('test Item component', () => {
@@ -206,7 +181,7 @@ describe('Menu', () => {
         icon: <Icon />,
       },
     });
-    const menu = mount(component);
-    expect(menu.exists('.bm-item-icon')).toBe(true);
+    const { container } = render(component);
+    expect(container.querySelectorAll('.bm-item-icon').length).toBe(1);
   });
 });
