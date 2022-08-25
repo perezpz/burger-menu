@@ -27,7 +27,23 @@ export const baseStyles: baseOptions = {
   },
 };
 
-export const animateStyles: any = {
+export type AttrType = {
+  start: any;
+  end: any;
+  style?: any;
+};
+
+type SideType = {
+  right: AttrType;
+  left: AttrType;
+};
+
+export type AnimateStyleTypes = {
+  slide: SideType;
+  fallDown: SideType;
+};
+
+export const animateStyles: AnimateStyleTypes = {
   slide: {
     right: {
       start: {

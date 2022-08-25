@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, isValidElement, cloneElement, Children } from 'react';
-import { baseStyles, animateStyles } from './baseStyles';
+import { baseStyles, animateStyles, AttrType } from './baseStyles';
 import noop from './utils/noop';
 import cls from 'classnames';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,8 +8,8 @@ import ClosedIcon from './icons/Close';
 
 type MenuProps = {
   isOpen: boolean;
-  side?: string;
-  animate?: string;
+  side: string;
+  animate: string;
   width?: string | number;
   duration?: string;
   customCrossIcon?: React.ReactNode;
@@ -93,7 +93,7 @@ const Menu = (props: MenuProps) => {
       })
     : null;
 
-  const variants: Record<string, any> = animateStyles[animate][side] || {};
+  const variants: AttrType = animateStyles?.[animate]?.[side] ?? {};
 
   return (
     <>
@@ -128,7 +128,7 @@ const Menu = (props: MenuProps) => {
           <motion.div
             className={cls('menu-wrap', props.className)}
             ref={menuWrap}
-            style={{ ...getStyles('menuWrap'), ...variants.style }}
+            style={{ ...getStyles('menuWrap'), ...variants?.style }}
             transition={{
               duration,
               ease: 'easeInOut',
@@ -137,8 +137,8 @@ const Menu = (props: MenuProps) => {
             animate="start"
             exit="end"
             variants={{
-              start: variants.start,
-              end: variants.end,
+              start: variants?.start,
+              end: variants?.end,
             }}
             onAnimationComplete={() => {
               if (isMenuOpen) didEnter();
